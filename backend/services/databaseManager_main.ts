@@ -312,7 +312,7 @@ class DatabaseManager {
             if (!this.connections[connectionId]) {
                 return {
                     success: false,
-                    message: 'Conexión no encontrada'
+                    message: 'Conexion no encontrada'
                 }
             }
 

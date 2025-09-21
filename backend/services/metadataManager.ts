@@ -13,13 +13,7 @@ class MetadataManager extends DatabaseManager {
             ORDER BY RDB$RELATION_NAME
         `;
 
-        const result = await this.executeQuery(connectionId, query);
-
-        if (result.success && this.connections[connectionId]) {
-            this.connections[connectionId].isConnected = true;
-            this.connections[connectionId].config.isActive = true;
-            this.connections[connectionId].lastUsed = new Date();
-        }
+        const result = await this.executeQuery(connectionId, query)
 
         return result;
     }
@@ -72,7 +66,7 @@ class MetadataManager extends DatabaseManager {
             if (!this.connections[connectionId]) {
                 return {
                     success: false,
-                    message: 'Conexión no encontrada'
+                    message: 'Conexion no encontrada'
                 };
             }
 
@@ -216,18 +210,26 @@ class MetadataManager extends DatabaseManager {
     }
 
 
-     async getTableConstraints(connectionId: string, tableName: string): Promise<any> {
-        const query = `
+    async getTableConstraints(connectionId: string, tableName: string): Promise<any> {
+        try {
+            if (!this.connections[connectionId]) {
+                return {
+                    success: false,
+                    message: 'Conexion no encontrada'
+                };
+            }
+
+            const query = `
                 SELECT 
-                    RC.RDB$CONSTRAINT_NAME AS CONSTRAINT_NAME,
-                    RC.RDB$CONSTRAINT_TYPE AS CONSTRAINT_TYPE,
-                    RC.RDB$RELATION_NAME AS RELATION_NAME,
-                    RC.RDB$INDEX_NAME AS INDEX_NAME,
+                    TRIM(RC.RDB$CONSTRAINT_NAME) AS CONSTRAINT_NAME,
+                    TRIM(RC.RDB$CONSTRAINT_TYPE) AS CONSTRAINT_TYPE,
+                    TRIM(RC.RDB$RELATION_NAME) AS RELATION_NAME,
+                    TRIM(RC.RDB$INDEX_NAME) AS INDEX_NAME,
                     
-                    REF.RDB$RELATION_NAME AS REFERENCED_TABLE_NAME,
-                    REF.RDB$INDEX_NAME AS REFERENCED_INDEX_NAME,
+                    TRIM(REF.RDB$RELATION_NAME) AS REFERENCED_TABLE_NAME,
+                    TRIM(REF.RDB$INDEX_NAME) AS REFERENCED_INDEX_NAME,
                     
-                    (SELECT LIST(ISG.RDB$FIELD_NAME)
+                    (SELECT LIST(TRIM(ISG.RDB$FIELD_NAME))
                         FROM RDB$INDEX_SEGMENTS ISG
                         WHERE ISG.RDB$INDEX_NAME = RC.RDB$INDEX_NAME
                         ORDER BY ISG.RDB$FIELD_POSITION
@@ -235,7 +237,7 @@ class MetadataManager extends DatabaseManager {
                     
                     CASE WHEN RC.RDB$CONSTRAINT_TYPE = 'FOREIGN KEY' THEN
                         (
-                            SELECT LIST(ISG_REF.RDB$FIELD_NAME)
+                            SELECT LIST(TRIM(ISG_REF.RDB$FIELD_NAME))
                             FROM RDB$INDEX_SEGMENTS ISG_REF
                             WHERE ISG_REF.RDB$INDEX_NAME = REF.RDB$INDEX_NAME
                             ORDER BY ISG_REF.RDB$FIELD_POSITION
@@ -251,9 +253,19 @@ class MetadataManager extends DatabaseManager {
                             
                 WHERE RC.RDB$RELATION_NAME = UPPER(?)
                 ORDER BY RC.RDB$CONSTRAINT_TYPE, RC.RDB$CONSTRAINT_NAME;
-        `;
+            `;
 
-        return this.executeQuery(connectionId, query, tableName);
+            const result = await this.executeQuery(connectionId, query, tableName);
+            console.log(`getTableConstraints result for ${tableName}:`, result);
+            return result;
+        } catch (error: any) {
+            console.error(`Error in getTableConstraints for ${tableName}:`, error);
+            return {
+                success: false,
+                message: 'Error al obtener constraints',
+                error: { message: error.message }
+            };
+        }
     }
 
 
@@ -267,6 +279,37 @@ class MetadataManager extends DatabaseManager {
             return columns.map(col => col.name);
         }
     }
-}
 
+    async getAllForeignKeys(connectionId: string): Promise<any> {
+        try {
+            const query = `
+                SELECT 
+                    TRIM(RC.RDB$RELATION_NAME) AS TABLE_NAME,
+                    TRIM(REF.RDB$RELATION_NAME) AS REFERENCED_TABLE_NAME,
+                    TRIM(RC.RDB$CONSTRAINT_NAME) AS CONSTRAINT_NAME
+                FROM RDB$RELATION_CONSTRAINTS RC
+                LEFT JOIN RDB$REF_CONSTRAINTS REFC 
+                ON RC.RDB$CONSTRAINT_NAME = REFC.RDB$CONSTRAINT_NAME
+                LEFT JOIN RDB$RELATION_CONSTRAINTS REF 
+                ON REFC.RDB$CONST_NAME_UQ = REF.RDB$CONSTRAINT_NAME
+                WHERE RC.RDB$CONSTRAINT_TYPE = 'FOREIGN KEY'
+                AND RC.RDB$RELATION_NAME IS NOT NULL
+                AND REF.RDB$RELATION_NAME IS NOT NULL
+                ORDER BY RC.RDB$RELATION_NAME, REF.RDB$RELATION_NAME;
+            `;
+            
+            const result = await this.executeQuery(connectionId, query);
+            console.log('All foreign keys query result:', result);
+            return result;
+        } catch (error: any) {
+            console.error('Error getting all foreign keys:', error);
+            return {
+                success: false,
+                message: 'Error al obtener foreign keys',
+                error: { message: error.message }
+            };
+        }
+    }
+
+}
 module.exports = MetadataManager;

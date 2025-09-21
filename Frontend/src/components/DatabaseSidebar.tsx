@@ -6,12 +6,13 @@ import './DatabaseSidebar.css';
 
 interface DatabaseSidebarProps {
   onConnectionSelect?: (connectionId: string) => void;
+  onDiagramSelect?: (connectionId: string) => void;
   onTableSelect?: (connectionId: string, tableName: string) => void;
   onObjectSelect?: (connectionId: string, objectType: 'function' | 'trigger' | 'procedure' | 'view' | 'index' | 'sequence' | 'package' | 'user', objectName: string) => void;
   onAddConnection?: () => void;
-  onViewChange?: (view: 'welcome' | 'query' | 'table' | 'object') => void; 
-  onCreateTable?: (connectionId: string) => void; 
-  onCreateView?: (connectionId: string) => void; 
+  onViewChange?: (view: 'welcome' | 'query' | 'table' | 'object' | 'diagram') => void;
+  onCreateTable?: (connectionId: string) => void;
+  onCreateView?: (connectionId: string) => void;
   onViewDDL?: (connectionId: string, objectType: 'table' | 'view' | 'function' | 'trigger' | 'procedure' | 'index' | 'sequence' | 'user' | 'package', objectName: string) => void;
   onModifyDDL?: (connectionId: string, objectType: 'table' | 'view' | 'function' | 'trigger' | 'procedure' | 'index' | 'sequence' | 'user' | 'package', objectName: string) => void;
   onViewTable?: (connectionId: string, tableName: string) => void; 
@@ -23,6 +24,7 @@ export interface DatabaseSidebarRef {
 
 const DatabaseSidebar = forwardRef(({
   onConnectionSelect,
+  onDiagramSelect,
   onTableSelect,
   onObjectSelect,
   onAddConnection,
@@ -400,6 +402,7 @@ const DatabaseSidebar = forwardRef(({
         });
     }
   };
+
 
   const selectConnection = async (connectionId: string) => {
     try {
@@ -1226,13 +1229,22 @@ const DatabaseSidebar = forwardRef(({
             <span className="tree-icon connection-icon-img"></span>
             <span>Conectar</span>
           </div>
-          
+        
+
           <div className="context-menu-item disconnect" onClick={() => {
             disconnectDatabase(contextMenu.connectionId);
             setContextMenu({ ...contextMenu, isVisible: false });
           }}>
             <span className="tree-icon disconnect-icon-img"></span>
             <span>Desconectar</span>
+          </div>
+
+            <div className="context-menu-item diagram" onClick={() => {
+            if (onDiagramSelect) onDiagramSelect(contextMenu.connectionId);
+            setContextMenu({ ...contextMenu, isVisible: false });
+          }}>
+            <span className="tree-icon connection-icon-img"></span>
+            <span>Ver diagrama</span>
           </div>
 
           <div className="context-menu-item query" onClick={() => {

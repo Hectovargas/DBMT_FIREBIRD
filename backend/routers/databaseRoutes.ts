@@ -28,6 +28,8 @@ router.get('/:connectionId/sequences', DatabaseController.getSequences);
 router.get('/:connectionId/indexes', DatabaseController.getIndexes);
 router.get('/:connectionId/triggers', DatabaseController.getTriggers);
 router.get('/:connectionId/users', DatabaseController.getUsers);
+router.get('/:connectionId/diagrama-er', DatabaseController.generarDiagramaER);
+router.get('/:connectionId/fks',DatabaseController.getAllForeignKeys);
 
 router.get('/:connectionId/tables/:tableName/ddl', DatabaseController.generateTableDDL);
 router.get('/:connectionId/functions/:functionName/ddl', DatabaseController.generateFunctionDDL);

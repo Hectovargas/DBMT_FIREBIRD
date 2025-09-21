@@ -15,15 +15,16 @@ import NavigationTabs from './components/NavigationTabs'
 import apiService from './services/apiService'
 import type { DatabaseConnection } from './services/apiService'
 import './App.css'
+import ERDiagram from './components/Diagram'
 
 
 function AppContent() {
-  
+
 
 
   const [showConnectionModal, setShowConnectionModal] = useState(false)
 
-  
+
   const [showCreateTableModal, setShowCreateTableModal] = useState(false)
   const [showCreateViewModal, setShowCreateViewModal] = useState(false)
   const [createTableData, setCreateTableData] = useState<{ connectionId: string; } | null>(null)
@@ -43,7 +44,7 @@ function AppContent() {
 
   const [selectedObjectName, setSelectedObjectName] = useState<string | null>(null)
 
-  const [activeView, setActiveView] = useState<'welcome' | 'query' | 'table' | 'object'>('welcome')
+  const [activeView, setActiveView] = useState<'welcome' | 'query' | 'table' | 'object' | 'diagram'>('welcome')
 
   const sidebarRef = useRef<DatabaseSidebarRef | null>(null)
 
@@ -61,7 +62,7 @@ function AppContent() {
         console.error('Error al cargar conexiones:', error)
       }
     }
-    
+
     loadConnections()
   }, [])
 
@@ -71,7 +72,7 @@ function AppContent() {
     if (sidebarRef.current) {
       await sidebarRef.current.loadConnections()
     }
-    
+
     try {
       const result = await apiService.getAllConnections()
       if (result.success) {
@@ -83,8 +84,13 @@ function AppContent() {
   }
 
   const handleConnectionSelect = (connectionId: string) => {
-    setSelectedConnection(connectionId) 
-    setActiveView('query') 
+    setSelectedConnection(connectionId)
+    setActiveView('query')
+  }
+
+  const handleDiagramSelect = (connectionId: string) => {
+    setSelectedConnection(connectionId)
+    setActiveView('diagram')
   }
 
   const handleTableSelect = (connectionId: string, tableName: string) => {
@@ -93,20 +99,20 @@ function AppContent() {
     if (tableName) {
       setSelectedConnection(connectionId);
       setSelectedTable(tableName);
-      setSelectedObjectType(null); 
-      setSelectedObjectName(null); 
-      setActiveView('table'); 
+      setSelectedObjectType(null);
+      setSelectedObjectName(null);
+      setActiveView('table');
     } else {
       console.error('Invalid table selection:', { tableName });
     }
   };
 
-  
+
   const handleObjectSelect = (connectionId: string, objectType: 'function' | 'trigger' | 'procedure' | 'view' | 'index' | 'package' | 'sequence' | 'user', objectName: string) => {
-    
+
     if (objectName) {
       setSelectedConnection(connectionId);
-      setSelectedTable(null); 
+      setSelectedTable(null);
       setSelectedObjectType(objectType);
       setSelectedObjectName(objectName);
       setActiveView('object');
@@ -115,7 +121,7 @@ function AppContent() {
     }
   };
 
- 
+
   const handleCreateTable = (connectionId: string) => {
     setCreateTableData({ connectionId });
     setShowCreateTableModal(true);
@@ -129,8 +135,8 @@ function AppContent() {
 
 
   const handleViewDDL = (connectionId: string, objectType: 'table' | 'view' | 'function' | 'trigger' | 'procedure' | 'index' | 'package' | 'sequence' | 'user', objectName: string) => {
-    
- 
+
+
     setSelectedConnection(connectionId);
     setSelectedTable(null);
     setSelectedObjectType(objectType as 'function' | 'trigger' | 'procedure' | 'view' | 'index' | 'sequence' | 'user');
@@ -140,11 +146,11 @@ function AppContent() {
 
 
   const handleModifyDDL = async (connectionId: string, objectType: 'table' | 'view' | 'function' | 'trigger' | 'procedure' | 'index' | 'sequence' | 'user' | 'package', objectName: string) => {
-    
+
     try {
 
       let ddlResult;
-      
+
       switch (objectType) {
         case 'table':
           ddlResult = await apiService.generateTableDDL(connectionId, objectName);
@@ -176,7 +182,7 @@ function AppContent() {
         default:
           throw new Error('Tipo de objeto no soportado');
       }
-      
+
       if (ddlResult.success && ddlResult.data) {
         setSelectedConnection(connectionId);
         setInitialQuery(ddlResult.data);
@@ -228,27 +234,28 @@ function AppContent() {
       <div className="app-content">
         <DatabaseSidebar
           ref={sidebarRef}
-          onConnectionSelect={handleConnectionSelect} 
-          onTableSelect={handleTableSelect} 
-          onObjectSelect={handleObjectSelect} 
+          onConnectionSelect={handleConnectionSelect}
+          onDiagramSelect={handleDiagramSelect}
+          onTableSelect={handleTableSelect}
+          onObjectSelect={handleObjectSelect}
           onAddConnection={() => setShowConnectionModal(true)}
-          onViewChange={setActiveView} 
-          onCreateTable={handleCreateTable} 
-          onCreateView={handleCreateView} 
-          onViewDDL={handleViewDDL} 
-          onModifyDDL={handleModifyDDL} 
-          onViewTable={handleViewTable} 
+          onViewChange={setActiveView}
+          onCreateTable={handleCreateTable}
+          onCreateView={handleCreateView}
+          onViewDDL={handleViewDDL}
+          onModifyDDL={handleModifyDDL}
+          onViewTable={handleViewTable}
         />
 
 
         <main className="main-content">
 
           <NavigationTabs
-            activeView={activeView} 
-            onViewChange={setActiveView} 
-            hasConnection={!!selectedConnection} 
-            hasTable={!!selectedTable} 
-            hasObject={!!selectedObjectName} 
+            activeView={activeView}
+            onViewChange={setActiveView}
+            hasConnection={!!selectedConnection}
+            hasTable={!!selectedTable}
+            hasObject={!!selectedObjectName}
           />
 
           {activeView === 'query' ? (
@@ -268,6 +275,11 @@ function AppContent() {
               objectName={selectedObjectName}
               objectType={selectedObjectType!}
             />
+          ) : activeView === 'diagram' ? (
+            <ERDiagram
+              connectionId={selectedConnection}
+              connectionName={connections.find(conn => conn.id === selectedConnection)?.name}
+            />
           ) : (
             <div className="welcome-message">
               <h2>Bienvenido al Gestor de Base de Datos</h2>
@@ -282,7 +294,7 @@ function AppContent() {
                 <button
                   className="query-btn"
                   onClick={() => setActiveView('query')}
-                  disabled={!selectedConnection} 
+                  disabled={!selectedConnection}
                 >
                   Abrir Editor de Consultas
                 </button>
@@ -292,7 +304,7 @@ function AppContent() {
         </main>
       </div>
 
-      
+
       <ConnectionForm
         isOpen={showConnectionModal}
         onClose={() => setShowConnectionModal(false)}

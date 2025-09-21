@@ -6,7 +6,7 @@ class databaseController {
   async testConnection(req: any, res: any): Promise<void> {
     try {
       const connectionConfig = req.body;
-      
+
       if (!connectionConfig.host || !connectionConfig.database) {
         res.status(400).json({
           success: false,
@@ -16,7 +16,7 @@ class databaseController {
       }
 
       const result = await databaseManager.testConnection(connectionConfig);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -34,7 +34,7 @@ class databaseController {
   async addConnection(req: any, res: any): Promise<void> {
     try {
       const connectionConfig = req.body;
-      
+
       if (!connectionConfig.name || !connectionConfig.host || !connectionConfig.database) {
         res.status(400).json({
           success: false,
@@ -44,7 +44,7 @@ class databaseController {
       }
 
       const result = await databaseManager.addConnection(connectionConfig);
-      
+
       if (result.success) {
         res.status(201).json(result);
       } else {
@@ -62,7 +62,7 @@ class databaseController {
   async connectToDatabase(req: any, res: any): Promise<void> {
     try {
       const { connectionId } = req.params;
-      
+
       if (!connectionId) {
         res.status(400).json({
           success: false,
@@ -72,7 +72,7 @@ class databaseController {
       }
 
       const result = await databaseManager.connectToDatabase(connectionId);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -90,7 +90,7 @@ class databaseController {
   async disconnectFromDatabase(req: any, res: any): Promise<void> {
     try {
       const { connectionId } = req.params;
-      
+
       if (!connectionId) {
         res.status(400).json({
           success: false,
@@ -100,7 +100,7 @@ class databaseController {
       }
 
       const result = await databaseManager.disconnectFromDatabase(connectionId);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -118,7 +118,7 @@ class databaseController {
   async removeConnection(req: any, res: any): Promise<void> {
     try {
       const { connectionId } = req.params;
-      
+
       if (!connectionId) {
         res.status(400).json({
           success: false,
@@ -128,7 +128,7 @@ class databaseController {
       }
 
       const result = await databaseManager.removeConnection(connectionId);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -179,7 +179,7 @@ class databaseController {
     try {
       const { connectionId } = req.params;
       const { query, parameters } = req.body;
-      
+
       if (!connectionId) {
         res.status(400).json({
           success: false,
@@ -197,7 +197,7 @@ class databaseController {
       }
 
       const result = await databaseManager.executeQuery(connectionId, query, parameters);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -206,17 +206,17 @@ class databaseController {
     } catch (error: any) {
       const firebirdErrorMsg = error.message;
       res.status(500).json({
-          success: false,
-          error: firebirdErrorMsg 
+        success: false,
+        error: firebirdErrorMsg
       });
-  }
-  
+    }
+
   }
 
   async getTables(req: any, res: any): Promise<void> {
     try {
-      const { connectionId} = req.params;
-      
+      const { connectionId } = req.params;
+
       if (!connectionId) {
         res.status(400).json({
           success: false,
@@ -226,7 +226,7 @@ class databaseController {
       }
 
       const result = await databaseManager.getTables(connectionId);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -243,7 +243,7 @@ class databaseController {
 
   async getViews(req: any, res: any): Promise<void> {
     try {
-      const { connectionId} = req.params;
+      const { connectionId } = req.params;
       if (!connectionId) {
         res.status(400).json({ success: false, message: 'connectionId es requerido' });
         return;
@@ -279,7 +279,7 @@ class databaseController {
 
   async getProcedures(req: any, res: any): Promise<void> {
     try {
-      const { connectionId} = req.params;
+      const { connectionId } = req.params;
       if (!connectionId) {
         res.status(400).json({ success: false, message: 'connectionId es requerido' });
         return;
@@ -297,7 +297,7 @@ class databaseController {
 
   async getFunctions(req: any, res: any): Promise<void> {
     try {
-      const { connectionId} = req.params;
+      const { connectionId } = req.params;
       if (!connectionId) {
         res.status(400).json({ success: false, message: 'connectionId es requerido' });
         return;
@@ -333,7 +333,7 @@ class databaseController {
 
   async getTriggers(req: any, res: any): Promise<void> {
     try {
-      const { connectionId} = req.params;
+      const { connectionId } = req.params;
       if (!connectionId) {
         res.status(400).json({ success: false, message: 'connectionId es requerido' });
         return;
@@ -351,7 +351,7 @@ class databaseController {
 
   async getIndexes(req: any, res: any): Promise<void> {
     try {
-      const { connectionId} = req.params;
+      const { connectionId } = req.params;
       if (!connectionId) {
         res.status(400).json({ success: false, message: 'connectionId es requerido' });
         return;
@@ -388,9 +388,9 @@ class databaseController {
   async getTableColumns(req: any, res: any): Promise<void> {
     try {
       const { connectionId, tableName } = req.params;
-      
+
       console.log('getTableColumns called with:', { connectionId, tableName });
-      
+
       if (!connectionId || !tableName) {
         res.status(400).json({
           success: false,
@@ -400,9 +400,9 @@ class databaseController {
       }
 
       const result = await databaseManager.getTablesColumns(connectionId, tableName);
-      
+
       console.log('getTableColumns result:', result);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -454,7 +454,7 @@ class databaseController {
   async generateTableDDL(req: any, res: any): Promise<void> {
     try {
       const { connectionId, tableName } = req.params;
-      
+
       if (!connectionId || !tableName) {
         res.status(400).json({
           success: false,
@@ -464,7 +464,7 @@ class databaseController {
       }
 
       const result = await databaseManager.generateTableDDL(connectionId, tableName);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -482,7 +482,7 @@ class databaseController {
   async generateFunctionDDL(req: any, res: any): Promise<void> {
     try {
       const { connectionId, functionName } = req.params;
-      
+
       if (!connectionId || !functionName) {
         res.status(400).json({
           success: false,
@@ -492,7 +492,7 @@ class databaseController {
       }
 
       const result = await databaseManager.generateFunctionDDL(connectionId, functionName);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -510,7 +510,7 @@ class databaseController {
   async generateTriggerDDL(req: any, res: any): Promise<void> {
     try {
       const { connectionId, triggerName } = req.params;
-      
+
       if (!connectionId || !triggerName) {
         res.status(400).json({
           success: false,
@@ -520,7 +520,7 @@ class databaseController {
       }
 
       const result = await databaseManager.generateTriggerDDL(connectionId, triggerName);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -538,7 +538,7 @@ class databaseController {
   async generateProcedureDDL(req: any, res: any): Promise<void> {
     try {
       const { connectionId, procedureName } = req.params;
-      
+
       if (!connectionId || !procedureName) {
         res.status(400).json({
           success: false,
@@ -548,7 +548,7 @@ class databaseController {
       }
 
       const result = await databaseManager.generateProcedureDDL(connectionId, procedureName);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -566,7 +566,7 @@ class databaseController {
   async generateViewDDL(req: any, res: any): Promise<void> {
     try {
       const { connectionId, viewName } = req.params;
-      
+
       if (!connectionId || !viewName) {
         res.status(400).json({
           success: false,
@@ -576,7 +576,7 @@ class databaseController {
       }
 
       const result = await databaseManager.generateViewDDL(connectionId, viewName);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -594,7 +594,7 @@ class databaseController {
   async generateIndexDDL(req: any, res: any): Promise<void> {
     try {
       const { connectionId, indexName } = req.params;
-      
+
       if (!connectionId || !indexName) {
         res.status(400).json({
           success: false,
@@ -604,7 +604,7 @@ class databaseController {
       }
 
       const result = await databaseManager.generateIndexDDL(connectionId, indexName);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -622,7 +622,7 @@ class databaseController {
   async generatePackageDDL(req: any, res: any): Promise<void> {
     try {
       const { connectionId, packageName } = req.params;
-      
+
       if (!connectionId || !packageName) {
         res.status(400).json({
           success: false,
@@ -632,7 +632,7 @@ class databaseController {
       }
 
       const result = await databaseManager.generatePackageDDL(connectionId, packageName);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -651,7 +651,7 @@ class databaseController {
     try {
       const { connectionId, sequenceName } = req.params;
 
-      
+
       if (!connectionId || !sequenceName) {
         res.status(400).json({
           success: false,
@@ -661,7 +661,7 @@ class databaseController {
       }
 
       const result = await databaseManager.generateSequenceDDL(connectionId, sequenceName);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -679,7 +679,7 @@ class databaseController {
   async generateUserDDL(req: any, res: any): Promise<void> {
     try {
       const { connectionId, userName } = req.params;
-      
+
       if (!connectionId || !userName) {
         res.status(400).json({
           success: false,
@@ -689,7 +689,7 @@ class databaseController {
       }
 
       const result = await databaseManager.generateUserDDL(connectionId, userName);
-      
+
       if (result.success) {
         res.status(200).json(result);
       } else {
@@ -704,50 +704,50 @@ class databaseController {
     }
   }
 
-async createTable(req: any, res: any): Promise<void> {
-  try {
-    const { connectionId } = req.params;
-    const tableData = req.body;
-    
-    console.log('Creating table for connection:', connectionId);
-    console.log('Table data:', tableData);
-    
-    if (!connectionId) {
-      res.status(400).json({
-        success: false,
-        message: 'connectionId es requerido'
-      });
-      return;
-    }
+  async createTable(req: any, res: any): Promise<void> {
+    try {
+      const { connectionId } = req.params;
+      const tableData = req.body;
 
-    if (!tableData.tableName || !tableData.columns || !Array.isArray(tableData.columns)) {
-      res.status(400).json({
+      console.log('Creating table for connection:', connectionId);
+      console.log('Table data:', tableData);
+
+      if (!connectionId) {
+        res.status(400).json({
+          success: false,
+          message: 'connectionId es requerido'
+        });
+        return;
+      }
+
+      if (!tableData.tableName || !tableData.columns || !Array.isArray(tableData.columns)) {
+        res.status(400).json({
+          success: false,
+          message: 'tableName y columns (array) son requeridos'
+        });
+        return;
+      }
+      const result = await databaseManager.createTable(connectionId, tableData);
+
+      if (result.success) {
+        res.status(201).json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error: any) {
+      res.status(500).json({
         success: false,
-        message: 'tableName y columns (array) son requeridos'
+        message: 'Error al crear tabla',
+        error: { message: error.message }
       });
-      return;
     }
-    const result = await databaseManager.createTable(connectionId, tableData);
-    
-    if (result.success) {
-      res.status(201).json(result);
-    } else {
-      res.status(400).json(result);
-    }
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: 'Error al crear tabla',
-      error: { message: error.message }
-    });
   }
-}
 
   async createView(req: any, res: any): Promise<void> {
     try {
       const { connectionId } = req.params;
       const viewData = req.body;
-      
+
       if (!connectionId) {
         res.status(400).json({
           success: false,
@@ -765,7 +765,7 @@ async createTable(req: any, res: any): Promise<void> {
       }
 
       const result = await databaseManager.createView(connectionId, viewData);
-      
+
       if (result.success) {
         res.status(201).json(result);
       } else {
@@ -779,6 +779,69 @@ async createTable(req: any, res: any): Promise<void> {
       });
     }
   }
+
+  async generarDiagramaER(req: any, res: any): Promise<void> {
+
+    try {
+      const { connectionId } = req.params;
+
+      if (!connectionId) {
+        res.status(400).json({
+          success: false,
+          message: 'connectionId es requerido'
+        });
+        return;
+      }
+
+      const result = await databaseManager.generarDiagramaER(connectionId);
+
+      if (result.success) {
+        res.status(200).json(result);
+      } else {
+        res.status(400).json(result);
+      }
+      
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Error al generar diagrama ER',
+        error: { message: error.message }
+      });
+    }
+  }
+  
+  async getAllForeignKeys(req: any, res: any): Promise<void> {
+    try {
+      const { connectionId } = req.params;
+
+      if (!connectionId ) {
+        res.status(400).json({
+          success: false,
+          message: 'connectionId requerido'
+        });
+        return;
+      }
+
+      const result = await databaseManager.getAllForeignKeys(connectionId);
+
+      if (result.success) {
+        res.status(200).json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error: any) {
+      console.error('getTableColumns error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al obtener columnas de la tabla',
+        error: { message: error.message }
+      });
+    }
+  }
+
+
 }
+
+
 
 module.exports = new databaseController();

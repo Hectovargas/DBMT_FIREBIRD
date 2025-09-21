@@ -543,6 +543,29 @@ async createTable(connectionId: string, tableData: {
       throw error;
     }
   }
+
+async generarDiagramaER(connectionId: string): Promise<any> {
+ 
+  try {
+    const response = await fetch(`${API_BASE}/${connectionId}/diagrama-er`, {method: 'GET',});
+    return await this.handleResponse(response);
+  } catch (error) {
+    console.error('Error en generarDiagramaER:', error);
+    throw error;
+  }
 }
+
+async getAllForeignKeys(connectionId: string): Promise<any> {
+
+  try{
+    const Response = await fetch(`${API_BASE}/${connectionId}/fks`, {method: 'GET',});
+    return await this.handleResponse(Response);
+  } catch (error) {
+    console.error('Error en llaves foraneas', error);
+  }
+}
+}
+
+
 
 export default new ApiService(); 
