@@ -1,4 +1,4 @@
-const express = require('express');
+
 const databaseManager = require('../services/databaseManager');
 
 class databaseController {
@@ -837,8 +837,53 @@ class databaseController {
         error: { message: error.message }
       });
     }
+
   }
 
+
+async migrate(req: any, res: any): Promise<void> {
+  try {
+    const { connectionId } = req.params;
+    const { postgresConfig } = req.body;
+
+    if (!connectionId) {
+      res.status(400).json({
+        success: false,
+        message: 'connectionId es requerido'
+      });
+      return;
+    }
+
+    if (!postgresConfig || !postgresConfig.host || !postgresConfig.database) {
+      res.status(400).json({
+        success: false,
+        message: 'postgresConfig con host y database es requerido'
+      });
+      return;
+    }
+
+    const result = await databaseManager.migrate(connectionId, postgresConfig);
+
+    if (result === 'OK') {
+      res.status(200).json({
+        success: true,
+        message: 'Migracion completada'
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: result
+      });
+    }
+  } catch (error: any) {
+    console.error('migrate error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al migrar la base de datos',
+      error: { message: error.message }
+    });
+  }
+}
 
 }
 

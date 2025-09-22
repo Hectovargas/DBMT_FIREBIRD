@@ -16,6 +16,7 @@ interface DatabaseSidebarProps {
   onViewDDL?: (connectionId: string, objectType: 'table' | 'view' | 'function' | 'trigger' | 'procedure' | 'index' | 'sequence' | 'user' | 'package', objectName: string) => void;
   onModifyDDL?: (connectionId: string, objectType: 'table' | 'view' | 'function' | 'trigger' | 'procedure' | 'index' | 'sequence' | 'user' | 'package', objectName: string) => void;
   onViewTable?: (connectionId: string, tableName: string) => void; 
+  onMigrate?: (connectionId: string, connectionName: string) => void;
 }
 
 export interface DatabaseSidebarRef {
@@ -34,6 +35,7 @@ const DatabaseSidebar = forwardRef(({
   onViewDDL,
   onModifyDDL,
   onViewTable,
+  onMigrate,
 }: DatabaseSidebarProps, ref: Ref<DatabaseSidebarRef>) => {
   const [contextMenu, setContextMenu] = useState<{
     x: number;
@@ -628,6 +630,14 @@ const DatabaseSidebar = forwardRef(({
       }
     }
   };
+
+  const handleMigrate = (connectionId: string) => {
+    const connection = connections.find(conn => conn.id === connectionId);
+    if (onMigrate && connection) {
+      onMigrate(connectionId, connection.name);
+    }
+  };
+
 
   return (
         <div className={`database-sidebar ${sidebarState}`}>
@@ -1273,7 +1283,18 @@ const DatabaseSidebar = forwardRef(({
             <span className="tree-icon delete-icon-img"></span>
             <span>Eliminar</span>
           </div>
+
+          <div className="context-menu-item refresh" onClick={() => {
+            handleMigrate(contextMenu.connectionId);
+            setContextMenu({ ...contextMenu, isVisible: false });
+          }}>
+            <span className="tree-icon migrate-icon-img"></span>
+            <span>Migrar a PostgreSQL</span>
+          </div>
+
         </div>
+
+        
       )}
 
       {/* Menú contextual para objetos */}

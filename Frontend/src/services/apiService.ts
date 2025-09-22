@@ -564,8 +564,30 @@ async getAllForeignKeys(connectionId: string): Promise<any> {
     console.error('Error en llaves foraneas', error);
   }
 }
+
+
+async migrate(connectionId: string, postgresConfig: {
+  host: string;
+  database: string;
+  user: string;
+  password: string;
+  port: number;
+}): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE}/${connectionId}/migrate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ postgresConfig }),
+    });
+    
+    return await this.handleResponse(response);
+  } catch (error) {
+    console.error('Error en migrate:', error);
+    throw error;
+  }
 }
-
-
+}
 
 export default new ApiService(); 

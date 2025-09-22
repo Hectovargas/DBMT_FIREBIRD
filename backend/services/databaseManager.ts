@@ -1,2 +1,2 @@
-const DDLManager = require('./ddlManager');
-module.exports = new DDLManager();
+const MigrationManager = require('./MigrationManager');
+module.exports = new MigrationManager();

@@ -1,4 +1,3 @@
-import console = require("node:console");
 
 const Firebird = require('node-firebird');
 const fs = require('fs').promises;

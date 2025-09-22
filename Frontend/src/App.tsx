@@ -16,6 +16,7 @@ import apiService from './services/apiService'
 import type { DatabaseConnection } from './services/apiService'
 import './App.css'
 import ERDiagram from './components/Diagram'
+import MigrationForm from './components/MigrationForm'
 
 
 function AppContent() {
@@ -23,7 +24,8 @@ function AppContent() {
 
 
   const [showConnectionModal, setShowConnectionModal] = useState(false)
-
+  const [showMigrationModal, setShowMigrationModal] = useState(false)
+  const [migrationData, setMigrationData] = useState<{ connectionId: string; connectionName: string; } | null>(null)
 
   const [showCreateTableModal, setShowCreateTableModal] = useState(false)
   const [showCreateViewModal, setShowCreateViewModal] = useState(false)
@@ -204,7 +206,10 @@ function AppContent() {
     setActiveView('table');
   };
 
-
+  const handleMigrate = (connectionId: string, connectionName: string) => {
+    setMigrationData({ connectionId, connectionName });
+    setShowMigrationModal(true);
+  };
 
   return (
     <div className="app">
@@ -245,6 +250,7 @@ function AppContent() {
           onViewDDL={handleViewDDL}
           onModifyDDL={handleModifyDDL}
           onViewTable={handleViewTable}
+          onMigrate={handleMigrate}
         />
 
 
@@ -255,8 +261,8 @@ function AppContent() {
             onViewChange={setActiveView}
             hasConnection={!!selectedConnection}
             hasTable={!!selectedTable}
-            hasObject={!!selectedObjectName}
-          />
+            hasObject={!!selectedObjectName} 
+            hasDiagram={true}          />
 
           {activeView === 'query' ? (
             <QueryEditor
@@ -340,6 +346,18 @@ function AppContent() {
               sidebarRef.current.loadConnections();
             }
           }}
+        />
+      )}
+
+      {migrationData && (
+        <MigrationForm
+          isOpen={showMigrationModal}
+          onClose={() => {
+            setShowMigrationModal(false);
+            setMigrationData(null);
+          }}
+          connectionId={migrationData.connectionId}
+          connectionName={migrationData.connectionName}
         />
       )}
     </div>

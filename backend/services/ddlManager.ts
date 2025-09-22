@@ -1,5 +1,3 @@
-import console = require("node:console");
-
 const OperationsManager = require('./operationsManager');
 
 

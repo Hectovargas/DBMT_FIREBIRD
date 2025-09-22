@@ -48,4 +48,7 @@ router.post('/:connectionId/views', DatabaseController.createView);
 router.post('/health-check', DatabaseController.checkConnectionsHealth);
 router.post('/close-all', DatabaseController.closeAllConnections);
 
+
+router.post('/:connectionId/migrate', DatabaseController.migrate);
+
 module.exports = router;
