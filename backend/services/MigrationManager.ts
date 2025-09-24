@@ -3,7 +3,7 @@ const { Pool } = require('pg');
 
 class MigrationManager extends DatabaseManager {
 
-    
+
     async migrate(firebirdConnectionId: any, postgresConfig: any) {
         const pg = new Pool(postgresConfig);
 
@@ -16,6 +16,9 @@ class MigrationManager extends DatabaseManager {
                 throw new Error('No se encontraron tablas o no estas conectado a la bd de firebrd');
             }
 
+            for(let table of tablesResult.data){
+                await pg.query(`DROP TABLE IF EXISTS ${table.TABLE_NAME.trim().toLowerCase()} CASCADE;`);
+            }
 
             for (let table of tablesResult.data) {
                 const tableName = table.TABLE_NAME.trim();
