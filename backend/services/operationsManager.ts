@@ -1,7 +1,7 @@
-const MetadataManager = require('./metadataManager');
+const DatabaseManager = require('./databaseManager_main');
 
-class OperationsManager extends MetadataManager {
-    
+class OperationsManager extends DatabaseManager {
+
 async createTable(connectionId: string, tableData: {
   tableName: string;
   columns: Array<{

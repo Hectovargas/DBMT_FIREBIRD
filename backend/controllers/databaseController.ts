@@ -1,5 +1,5 @@
 
-const databaseManager = require('../services/databaseManager');
+const databaseManager = require('../index');
 
 class databaseController {
 

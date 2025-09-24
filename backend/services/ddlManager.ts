@@ -1,8 +1,6 @@
-const OperationsManager = require('./operationsManager');
+const DatabaseManager = require('./databaseManager_main');
 
-
-
-class DDLManager extends OperationsManager {
+class DDLManager extends DatabaseManager {
     
 
     async generateTableDDL(connectionId: string, tableName: string): Promise<any> {
