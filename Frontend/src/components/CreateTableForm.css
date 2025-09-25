@@ -1,4 +1,4 @@
-/* Modal Overlay */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -13,7 +13,7 @@
   padding: 20px;
 }
 
-/* Variables CSS para temas */
+
 :root {
   --modal-bg: #ffffff;
   --modal-body-bg: #f8fafc;

@@ -15,14 +15,11 @@ const DDLViewer: React.FC<DDLViewerProps> = ({
   onClose
 }) => {
   const [ddl, setDdl] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>('');
-  const [copied, setCopied] = useState(false);
   useEffect(() => {
     loadDDL();
   }, [connectionId, objectType, objectName]);
   const loadDDL = async () => {
-    setIsLoading(true);
     setError('');
     setDdl('');
     try {
@@ -59,29 +56,7 @@ const DDLViewer: React.FC<DDLViewerProps> = ({
       }
     } catch (err: any) {
       setError(err.message || 'Error al cargar el DDL');
-    } finally {
-      setIsLoading(false);
     }
-  };
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(ddl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Error al copiar al portapapeles:', err);
-    }
-  };
-  const downloadDDL = () => {
-    const blob = new Blob([ddl], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${objectName}.sql`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
   const getObjectTypeLabel = () => {
     const labels = {
@@ -95,24 +70,6 @@ const DDLViewer: React.FC<DDLViewerProps> = ({
     };
     return labels[objectType] || objectType;
   };
-  if (isLoading) {
-    return (
-      <div className="ddl-viewer-overlay">
-        <div className="ddl-viewer">
-          <div className="ddl-header">
-            <h2>Generando DDL...</h2>
-            <button onClick={onClose} className="close-btn">×</button>
-          </div>
-          <div className="ddl-content">
-            <div className="loading-spinner">
-              <div className="spinner"></div>
-              <p>Generando DDL para {getObjectTypeLabel().toLowerCase()} "{objectName}"</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
   return (
     <div className="ddl-viewer-overlay">
       <div className="ddl-viewer">
@@ -141,34 +98,12 @@ const DDLViewer: React.FC<DDLViewerProps> = ({
                   <span className="ddl-label">DDL Generado:</span>
                 </div>
                 <div className="toolbar-right">
-                  <button
-                    onClick={copyToClipboard}
-                    className={`btn ${copied ? 'btn-success' : 'btn-secondary'} btn-sm`}
-                  >
-                    {copied ? 'Copiado' : 'Copiar'}
-                  </button>
-                  <button
-                    onClick={downloadDDL}
-                    className="btn btn-primary btn-sm"
-                  >
-                    Descargar
-                  </button>
                 </div>
               </div>
               <div className="ddl-code-container">
                 <pre className="ddl-code">
                   <code>{ddl}</code>
                 </pre>
-              </div>
-              <div className="ddl-info">
-                <p>
-                  <strong>Tipos de objeto soportados:</strong> Tablas, Vistas, Funciones, 
-                  Procedimientos, Triggers, Índices y Secuencias
-                </p>
-                <p>
-                  <strong>Uso:</strong> Copia este DDL y ejecútalo en tu base de datos 
-                  para recrear el objeto o usarlo como referencia para modificaciones.
-                </p>
               </div>
             </>
           )}

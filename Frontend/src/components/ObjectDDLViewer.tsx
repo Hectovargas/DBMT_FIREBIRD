@@ -20,7 +20,6 @@ const ObjectDDLViewer: React.FC<ObjectDDLViewerProps> = ({
 }) => {
   
   const [ddl, setDdl] = useState<string>('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
@@ -35,7 +34,6 @@ const ObjectDDLViewer: React.FC<ObjectDDLViewerProps> = ({
   const loadObjectDDL = async () => {
     if (!connectionId || !objectName) return;
 
-    setLoading(true);
     setError('');
 
     try {
@@ -84,9 +82,7 @@ const ObjectDDLViewer: React.FC<ObjectDDLViewerProps> = ({
       }
     } catch (err: any) {
       setError(err.message || 'Error al cargar el DDL');
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const getObjectTypeDisplayName = (): string => {
@@ -148,19 +144,13 @@ const ObjectDDLViewer: React.FC<ObjectDDLViewerProps> = ({
         <h3>DDL del {getObjectTypeDisplayName()}: {objectName}</h3>
       </div>
 
-      {loading && (
-        <div className="loading-message">
-          <p>Generando DDL del {getObjectTypeDisplayName().toLowerCase()}...</p>
-        </div>
-      )}
-
       {error && (
         <div className="error-message">
           <p><span className="error-icon"></span> {error}</p>
         </div>
       )}
 
-      {!loading && !error && (
+      { !error && (
         <div className="ddl-content">
           <div className="ddl-header">
             <h4>Sentencia {getDDLTitle()}</h4>

@@ -19,10 +19,8 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
     port: 3050
   });
 
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
-  const [testMode, setTestMode] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -36,8 +34,6 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
       });
       setError('');
       setSuccess('');
-      setLoading(false);
-      setTestMode(false);
     }
   }, [isOpen]);
 
@@ -55,13 +51,11 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
   };
 
   const handleClose = () => {
-    if (!loading) {
       onClose();
-    }
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget && !loading) {
+    if (e.target === e.currentTarget) {
       onClose();
     }
   };
@@ -72,23 +66,18 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
       return;
     }
 
-    setLoading(true);
     setError('');
     setSuccess('');
-    setTestMode(true);
-
     try {
       ;
       const result = await apiService.testConnection(formData);
       if (result.success) {
-        setSuccess('Prueba de conexión exitosa');
+        setSuccess('Prueba de conexion exitosa');
       } else {
-        setError(result.message || 'Error en la prueba de conexión');
+        setError(result.message || 'Error en la prueba de conexion');
       }
     } catch (err: any) {
-      setError(err.message || 'Error de conexión al servidor. Verifica que el backend esté ejecutándose.');
-    } finally {
-      setLoading(false);
+      setError(err.message || 'Error de conexión al servidor. Verifica que el backend este ejecutándose.');
     }
   };
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,26 +86,22 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
       setError('Nombre, host y base de datos son campos requeridos');
       return;
     }
-    setLoading(true);
     setError('');
     setSuccess('');
-    setTestMode(false);
     try {
 
       const result = await apiService.addConnection(formData);
       if (result.success) {
-        setSuccess('Conexión agregada exitosamente');
+        setSuccess('Conexion agregada exitosamente');
         onConnectionSuccess();
         setTimeout(() => {
           onClose();
         }, 100);
       } else {
-        setError(result.message || 'Error al agregar la conexión');
+        setError(result.message);
       }
     } catch (err: any) {
-      setError(err.message || 'Error de conexión al servidor. Verifica que el backend esté ejecutándose.');
-    } finally {
-      setLoading(false);
+      setError(err.message);
     }
   };
   
@@ -131,7 +116,6 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
           <button
             className="modal-close-btn"
             onClick={handleClose}
-            disabled={loading}
             title="Cerrar"
           >
             ✕
@@ -163,7 +147,6 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
               onChange={handleInputChange}
               required
               placeholder="Mi Base de Datos Firebird"
-              disabled={loading}
             />
           </div>
 
@@ -176,8 +159,7 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
               value={formData.host}
               onChange={handleInputChange}
               required
-              placeholder="localhost o 192.168.1.100"
-              disabled={loading}
+              placeholder="localhost"
             />
           </div>
 
@@ -191,7 +173,6 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
               onChange={handleInputChange}
               required
               placeholder="/path/to/database.fdb"
-              disabled={loading}
             />
           </div>
 
@@ -204,7 +185,6 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
               value={formData.username}
               onChange={handleInputChange}
               placeholder="SYSDBA"
-              disabled={loading}
             />
           </div>
 
@@ -217,7 +197,6 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
               value={formData.password}
               onChange={handleInputChange}
               placeholder="masterkey"
-              disabled={loading}
             />
           </div>
 
@@ -232,7 +211,6 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
               min="1"
               max="65535"
               placeholder="3050"
-              disabled={loading}
             />
           </div>
 
@@ -240,19 +218,18 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({ onConnectionSuccess, is
 
             <button
               type="button"
-              className={`test-btn ${loading && testMode ? 'loading' : ''}`}
+              className={"test-btn"}
               onClick={handleTestConnection}
-              disabled={loading || !formData.host || !formData.database}
             >
-              {loading && testMode ? 'Probando...' : 'Probar Conexión'}
+              Probar Conexion
             </button>
 
             <button
               type="submit"
-              className={`test-btn ${loading && !testMode ? 'loading' : ''}`}
-              disabled={loading || !formData.name || !formData.host || !formData.database}
+              className={"test-btn "}
+              disabled={ !formData.name || !formData.host || !formData.database}
             >
-              {loading && !testMode ? 'Agregando...' : 'Agregar Conexión'}
+              Agregar Conexion
             </button>
           </div>
         </form>

@@ -51,10 +51,9 @@ const CreateTableForm: React.FC<CreateTableFormProps> = ({
     unique: false,
     defaultValue: '' 
   }]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [availableTables, setAvailableTables] = useState<TableInfo[]>([]);
-  const [loadingTables, setLoadingTables] = useState(false);
+
 
   const dataTypeCategories = {
     'Números Enteros': ['SMALLINT', 'INTEGER', 'BIGINT'],
@@ -67,7 +66,6 @@ const CreateTableForm: React.FC<CreateTableFormProps> = ({
 
   useEffect(() => {
     const loadAvailableTables = async () => {
-      setLoadingTables(true);
       try {
         const result = await apiService.getTables(connectionId);
         
@@ -95,9 +93,7 @@ const CreateTableForm: React.FC<CreateTableFormProps> = ({
         }
       } catch (err) {
         console.error('Error loading tables:', err);
-      } finally {
-        setLoadingTables(false);
-      }
+      } 
     };
   
     if (isOpen) {
@@ -295,10 +291,8 @@ const handleSubmit = async () => {
     return;
   }
   
-  setLoading(true);
 
   try {
-    // Verificar explícitamente que la conexión esté activa
     const connectResult = await apiService.connectToDatabase(connectionId);
     if (!connectResult.success) {
       throw new Error('No se pudo conectar a la base de datos: ' + connectResult.message);
@@ -347,9 +341,8 @@ const handleSubmit = async () => {
     }
   } catch (err) {
     setError('Error al crear la tabla: ' + (err instanceof Error ? err.message : 'Error desconocido'));
-  } finally {
-    setLoading(false);
-  }
+  } 
+  
 };
 
   const getReferencedTableColumns = (tableName: string): string[] => {
@@ -564,9 +557,8 @@ const handleSubmit = async () => {
                             type="button"
                             onClick={() => updateForeignKey(index, 'referencedTable', '')}
                             className="add-fk-btn"
-                            disabled={loadingTables}
                           >
-                            {loadingTables ? 'Cargando...' : 'Agregar FK'}
+                            Agregar FK
                           </button>
                         )}
                       </div>
@@ -637,7 +629,6 @@ const handleSubmit = async () => {
               type="button"
               onClick={onClose}
               className="cancel-btn"
-              disabled={loading}
             >
               Cancelar
             </button>
@@ -645,9 +636,8 @@ const handleSubmit = async () => {
               type="submit"
               onClick={handleSubmit}
               className="submit-btn"
-              disabled={loading || !tableName.trim() || columns.some(col => !col.name.trim()) || tableExists}
+              disabled={ !tableName.trim() || columns.some(col => !col.name.trim()) || tableExists}
             >
-              {loading ? 'Creando Tabla...' : 'Crear Tabla'}
             </button>
           </div>
         </div>

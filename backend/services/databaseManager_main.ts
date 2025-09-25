@@ -350,13 +350,13 @@ class DatabaseManager {
 
                 return {
                     success: true,
-                    message: 'Conexión eliminada exitosamente'
+                    message: 'Conexion eliminada exitosamente'
                 };
             }
 
             return {
                 success: false,
-                message: 'Conexión no encontrada'
+                message: 'Conexion no encontrada'
             };
         } catch (error: any) {
             return {
@@ -391,7 +391,7 @@ class DatabaseManager {
     async executeQuery(connectionId: string, query: string, parameters?: any): Promise<any> {
         try {
             if (!this.connections[connectionId]) {
-                throw new Error('Conexión no encontrada');
+                throw new Error('Conexion no encontrada');
             }
 
             const connection = this.connections[connectionId];
@@ -417,10 +417,8 @@ class DatabaseManager {
                     }
 
                     db.query('SET BLOB_DISPLAY_DEFAULT = TEXT', (err: any) => {});
-                    const startTime = Date.now();
 
                     db.query(query, parameters || [], (err: any, result: any) => {
-                        const executionTime = Date.now() - startTime;
 
                         if (err) {
                             db.detach();
@@ -449,7 +447,6 @@ class DatabaseManager {
                             success: true,
                             data: result,
                             rowsAffected: result ? result.length : 0,
-                            executionTime,
                             columns: columns
                         });
                     });

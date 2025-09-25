@@ -34,10 +34,10 @@ class DDLManager extends DatabaseManager {
     private async buildTableDDL(connectionId: string, tableName: string, columns: any[], indexes: any[], constraints: any[]): Promise<string> {
         
   
-        let ddl = `-- ${tableName} definition\n\n-- DROP TABLE ${tableName};\n\n`;
+        let ddl = `-- ${tableName} \n\n-- DROP TABLE ${tableName};\n\n`;
         
 
-        ddl += `CREATE TABLE ${tableName} (`;
+        ddl += `CREATE TABLE ${tableName} (\n`;
 
         const columnDefs = columns.map(col => {
             let def = `\t${col.name} ${this.getFirebirdDataType(col)}`;
@@ -53,38 +53,6 @@ class DDLManager extends DatabaseManager {
 
         ddl += columnDefs.join(',\n');
         
-       
-        const pk = constraints.find(c => c.CONSTRAINT_TYPE === 'PRIMARY KEY');
-        if (pk) {
-            const pkName = pk.CONSTRAINT_NAME || `PK_${tableName}`;
-            const pkFields = this.getConstraintFields(columns, pk);
-            ddl += `,\n\tCONSTRAINT "${pkName}" PRIMARY KEY (${pkFields.map(f => `"${f}"`).join(', ')})`;
-        }
-        
-        
-        const uniques = constraints.filter(c => c.CONSTRAINT_TYPE === 'UNIQUE');
-        for (const uk of uniques) {
-            const ukName = uk.CONSTRAINT_NAME || `UK_${tableName}_${Date.now()}`;
-            const ukFields = this.getConstraintFields(columns, uk);
-            ddl += `,\n\tCONSTRAINT "${ukName}" UNIQUE (${ukFields.map(f => `"${f}"`).join(', ')})`;
-        }
-        
-        ddl += '\n);\n\n';
-        
-       
-        for (const index of indexes) {
-            if (index.INDEX_NAME && !index.INDEX_NAME.startsWith('RDB$')) {
-                const unique = index.IS_UNIQUE ? 'UNIQUE ' : '';
-                const indexFields = await this.getIndexFields(connectionId, index.INDEX_NAME);
-                
-                if (indexFields && indexFields.length > 0) {
-                    const fieldList = indexFields.map(f => `"${f.FIELD_NAME}"`).join(', ');
-                    ddl += `CREATE ${unique}INDEX ${index.INDEX_NAME} ON ${tableName} (${fieldList});\n`;
-                }
-            }
-        }
-        
-    
         
         return ddl;
     }
@@ -773,29 +741,6 @@ private escapeString(value: string): string {
     }
 
  
-    private getConstraintFields(columns: any[], constraint: any): string[] {
-        try {
-
-            if (constraint.COLUMN_NAMES) {
-
-                return constraint.COLUMN_NAMES.split(',').map((name: string) => name.trim());
-            }
-            
-    
-            if (constraint.COLUMN_POSITIONS) {
-                const positions = constraint.COLUMN_POSITIONS.split(',').map((pos: string) => parseInt(pos.trim()));
-                return positions.map((pos: number) => {
-                    const column = columns.find(col => col.position === pos);
-                    return column ? column.name : `COLUMN_${pos}`;
-                });
-            }
-            
-            return columns.length > 0 ? [columns[0].name] : ['UNKNOWN_COLUMN'];
-        } catch (error) {
-
-            return columns.length > 0 ? [columns[0].name] : ['UNKNOWN_COLUMN'];
-        }
-    }
 }
 
 module.exports = DDLManager;

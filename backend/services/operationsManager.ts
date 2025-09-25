@@ -22,8 +22,6 @@ async createTable(connectionId: string, tableData: {
   }>;
 }): Promise<any> {
   try {
-    console.log('Checking connection:', connectionId);
-    console.log('Available connections:', Object.keys(this.connections));
 
     if (!this.connections[connectionId]) {
       console.error('Connection not found:', connectionId);
@@ -185,7 +183,7 @@ private formatDefaultValue(value: string, type: string): string | null {
             if (!this.connections[connectionId]) {
                 return {
                     success: false,
-                    message: 'Conexión no encontrada'
+                    message: 'Conexion no encontrada'
                 };
             }
 

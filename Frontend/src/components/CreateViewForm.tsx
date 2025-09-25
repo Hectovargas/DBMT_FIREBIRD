@@ -17,12 +17,10 @@ const CreateViewForm: React.FC<CreateViewFormProps> = ({
 }) => {
   const [viewName, setViewName] = useState('');
   const [sqlQuery, setSqlQuery] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async () => {
     setError('');
-    setLoading(true);
 
     try {
       if (!viewName.trim()) {
@@ -46,24 +44,22 @@ const CreateViewForm: React.FC<CreateViewFormProps> = ({
         setViewName('');
         setSqlQuery('');
       } else {
-        setError(result.error?.message || 'Error al crear la vista');
+        setError('Error al crear la vista');
       }
     } catch (err) {
-      setError('Error al crear la vista: ' + (err instanceof Error ? err.message : 'Error desconocido'));
-    } finally {
-      setLoading(false);
-    }
+      setError('Error al crear la vista');
+    } 
   };
 
   const insertExampleQuery = () => {
     setSqlQuery(`SELECT 
-  t1.id,
-  t1.nombre,
-  t1.apellido,
-  t2.departamento
-FROM tabla1 t1
-LEFT JOIN tabla2 t2 ON t1.id = t2.id
-WHERE t1.activo = 1`);
+        t1.id,
+        t1.nombre,
+        t1.apellido,
+        t2.departamento
+      FROM tabla1 t1
+      LEFT JOIN tabla2 t2 ON t1.id = t2.id
+      WHERE t1.activo = 1`);
   };
 
   if (!isOpen) return null;
@@ -117,7 +113,6 @@ WHERE t1.activo = 1`);
               type="button"
               onClick={onClose}
               className="cancel-btn"
-              disabled={loading}
             >
               Cancelar
             </button>
@@ -125,9 +120,7 @@ WHERE t1.activo = 1`);
               type="submit"
               onClick={handleSubmit}
               className="submit-btn"
-              disabled={loading || !viewName.trim() || !sqlQuery.trim()}
             >
-              {loading ? 'Creando...' : 'Crear Vista'}
             </button>
           </div>
         </div>

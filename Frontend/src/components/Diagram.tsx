@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import ReactFlow, {
   type Node,
   type Edge,
@@ -71,9 +71,7 @@ const getFirebirdDataType = (dataType: string | number, precision?: number, scal
     case 35: return 'TIMESTAMP';
     case 37: return `VARCHAR(${precision || ''})`;
     case 261: return 'BLOB';
-    case 40: return 'CSTRING';
-    case 45: return 'BLOB_ID';
-    default: return `TYPE_${typeNum}`;
+    default: return `TEXT`;
   }
 };
 
@@ -156,8 +154,6 @@ const nodeTypes = {
 const D3Diagram = ({ connectionId, connectionName }: D3DiagramProps) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [loading, setLoading] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const generateLayout = (tableData: TableData[], relationships: Relationship[]) => {
     const nodeSpacing = 600;
@@ -192,8 +188,8 @@ const D3Diagram = ({ connectionId, connectionName }: D3DiagramProps) => {
 
     const newEdges: Edge[] = relationships.map((rel, index) => ({
       id: `edge-${index}`,
-      source: rel.from,
-      target: rel.to,
+      source: rel.to,
+      target: rel.from,
       sourceHandle: 'right',
       targetHandle: 'left',
       type: 'smoothstep',
@@ -220,12 +216,10 @@ const D3Diagram = ({ connectionId, connectionName }: D3DiagramProps) => {
       return;
     }
 
-    setLoading(true);
-
     try {
       const tablesResult = await apiService.getTables(connectionId);
       if (!tablesResult.success) {
-        throw new Error(tablesResult.message || 'Error al obtener tablas');
+        throw new Error('Error al obtener tablas');
       }
 
       const tableData: TableData[] = [];
@@ -270,8 +264,6 @@ const D3Diagram = ({ connectionId, connectionName }: D3DiagramProps) => {
       generateLayout(tableData, relationships);
     } catch (err: any) {
 
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -280,12 +272,6 @@ const D3Diagram = ({ connectionId, connectionName }: D3DiagramProps) => {
     [setEdges]
   );
 
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 100);
-  };
 
   useEffect(() => {
     if (connectionId) {
@@ -298,7 +284,7 @@ const D3Diagram = ({ connectionId, connectionName }: D3DiagramProps) => {
 
   if (!connectionId) {
     return (
-      <div className={`rf-diagram-container ${isFullscreen ? 'fullscreen' : ''}`}>
+      <div className={"rf-diagram-container"}>
         <div className="rf-diagram-header">
           <div className="rf-header-info">
             <h2>Diagrama Relacional</h2>
@@ -315,27 +301,8 @@ const D3Diagram = ({ connectionId, connectionName }: D3DiagramProps) => {
     );
   }
 
-  if (loading) {
-    return (
-      <div className={`rf-diagram-container ${isFullscreen ? 'fullscreen' : ''}`}>
-        <div className="rf-diagram-header">
-          <div className="rf-header-info">
-            <h2>cargando</h2>
-          </div>
-        </div>
-        <div className="rf-diagram-loading">
-          <div className="rf-loading-content">
-            <div className="rf-loading-spinner"></div>
-            <h3>Generando diagrama ER...</h3>
-            <p>Obteniendo estructura de la base de datos...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={`rf-diagram-container ${isFullscreen ? 'fullscreen' : ''}`}>
+    <div className={"rf-diagram-container"}>
       <div className="rf-diagram-header">
         <div className="rf-header-info">
           <h2>Diagrama ER - {connectionName || 'Base de datos'}</h2>
@@ -344,17 +311,8 @@ const D3Diagram = ({ connectionId, connectionName }: D3DiagramProps) => {
           <button
             className="rf-btn rf-btn-primary"
             onClick={fetchDiagramData}
-            disabled={loading}
           >
-            {loading ? 'Generando...' : 'Actualizar'}
-          </button>
-          <button
-            className="rf-btn rf-btn-secondary"
-            onClick={toggleFullscreen}
-            disabled={nodes.length === 0}
-            title={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
-          >
-            {isFullscreen ? 'Ventana' : 'Pantalla completa'}
+
           </button>
         </div>
       </div>

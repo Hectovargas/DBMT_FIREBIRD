@@ -104,7 +104,6 @@ class MigrationManager extends DatabaseManager {
 
         const cleanValue = defaultValue.replace(/^['"]+|['"]+$/g, '');
 
-
         if (cleanValue === 'CURRENT_TIMESTAMP' || cleanValue === 'NOW()') return 'CURRENT_TIMESTAMP';
         if (cleanValue === 'TRUE' || cleanValue === 'true') return 'true';
         if (cleanValue === 'FALSE' || cleanValue === 'false') return 'false';
@@ -113,7 +112,6 @@ class MigrationManager extends DatabaseManager {
         if (type.includes('INT') || type.includes('NUMERIC') || type.includes('DECIMAL') || type.includes('FLOAT')) {
             return cleanValue;
         }
-
         return `'${cleanValue.replace(/'/g, "''")}'`;
     }
 
@@ -122,8 +120,8 @@ class MigrationManager extends DatabaseManager {
         if (scale !== null && scale !== 0) {
             const actualScale = Math.abs(scale);
             return precision ? `NUMERIC(${precision},${actualScale})` : 'DECIMAL(10,2)';
+            
         }
-
 
         if (firebirdType === 8) return 'INTEGER';
         if (firebirdType === 7) return 'SMALLINT';
@@ -204,8 +202,6 @@ class MigrationManager extends DatabaseManager {
 
         viewSource = viewSource.replace(/CREATE\s+VIEW\s+[^\s]+\s+AS\s*/gi, '');
 
-        viewSource = viewSource.replace(/RDB\$[A-Z_]+/g, (match: string) => match.toLowerCase());
-
         viewSource = viewSource.replace(/FROM\s+([A-Z_]+)/gi, (match: any, tableName: string) => `FROM ${tableName.toLowerCase()}`);
         viewSource = viewSource.replace(/JOIN\s+([A-Z_]+)/gi, (match: any, tableName: string) => `JOIN ${tableName.toLowerCase()}`);
 
@@ -215,6 +211,7 @@ class MigrationManager extends DatabaseManager {
     }
 
     async copyData(pg: { query: (arg0: string, arg1: any[]) => any; }, tableName: string, rows: string | any[]) {
+       
         if (rows.length === 0) return;
 
         const columns = Object.keys(rows[0]).map(c => c.toLowerCase());

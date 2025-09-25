@@ -1221,7 +1221,7 @@ const DatabaseSidebar = forwardRef(({
           )}
       </div>
 
-      {/* Menú contextual para conexiones */}
+
       {contextMenu.isVisible && (
         <div
           className="context-menu"
@@ -1297,7 +1297,7 @@ const DatabaseSidebar = forwardRef(({
         
       )}
 
-      {/* Menú contextual para objetos */}
+
       {objectContextMenu.isVisible && (
         <div
           className="context-menu object-context-menu"
@@ -1357,7 +1357,6 @@ const DatabaseSidebar = forwardRef(({
             </div>
           )}
 
-      {/* Overlay para cerrar menús contextuales */}
       {(contextMenu.isVisible || objectContextMenu.isVisible) && (
         <div
           className="context-menu-overlay"

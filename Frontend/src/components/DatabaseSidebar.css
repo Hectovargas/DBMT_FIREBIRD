@@ -1,21 +1,20 @@
-/* ========== CONTENEDOR PRINCIPAL DEL SIDEBAR ========== */
+
 .database-sidebar {
-  width: 300px; /* Ancho fijo del sidebar */
-  min-width: 250px; /* Ancho mínimo */
-  max-width: 400px; /* Ancho máximo */
-  min-height: calc(100vh - 80px); /* Altura mínima: 100% de la ventana menos el header */
-  height: calc(100vh - 80px); /* Altura fija: 100% de la ventana menos el header */
-  background: var(--sidebar-bg); /* Color de fondo del sidebar usando variable CSS */
-  border-right: 1px solid var(--border-color); /* Borde derecho usando variable CSS */
+  width: 300px; 
+  min-width: 250px; 
+  max-width: 400px; 
+  min-height: calc(100vh - 80px); 
+  height: calc(100vh - 80px); 
+  background: var(--sidebar-bg); 
+  border-right: 1px solid var(--border-color);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  flex-shrink: 0; /* Evita que se encoja */
+  flex-shrink: 0; 
   display: flex;
   flex-direction: column;
-  transition: background-color 0.3s, border-color 0.3s; /* Transición suave al cambiar tema */
-  position: relative; /* Para posicionar elementos internos */
+  transition: background-color 0.3s, border-color 0.3s; 
+  position: relative;
 }
 
-/* ========== ENCABEZADO DEL SIDEBAR ========== */
 .sidebar-header {
   display: flex;
   justify-content: space-between;

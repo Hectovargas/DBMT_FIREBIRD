@@ -47,14 +47,10 @@ const QueryEditor: React.FC<QueryEditorProps> = ({ connectionId, connectionName,
 
     try {
 
-      const startTime = Date.now();
       
       const queryResult = await apiService.executeQuery(connectionId, query.trim());
       
-      const endTime = Date.now();
-      
-      setExecutionTime(endTime - startTime);
-      
+  
       if (queryResult.success) {
         setResult(queryResult);
         
@@ -72,20 +68,6 @@ const QueryEditor: React.FC<QueryEditorProps> = ({ connectionId, connectionName,
       setLoading(false);
     }
   };
-
-  const handleClearQuery = () => {
-    setQuery(''); 
-    setResult(null); 
-    setError('');
-    setExecutionTime(0); 
-  };
-
-  const handleClearResults = () => {
-    setResult(null); 
-    setError('');
-    setExecutionTime(0); 
-  };
-
   
   
   const formatValue = (value: any): string => {
@@ -129,20 +111,12 @@ const QueryEditor: React.FC<QueryEditorProps> = ({ connectionId, connectionName,
             >
             {loading ? 'Ejecutando...' : 'Ejecutar (Ctrl+Enter)'}
           </button>
-          
-          <button className="clear-query-btn" onClick={handleClearQuery}>
-            Limpiar Consulta
-          </button>
-          
-          <button className="clear-results-btn" onClick={handleClearResults}>
-            Limpiar Resultados
-          </button>
         </div>
       </div>
 
       {!connectionId && (
         <div className="no-connection-warning">
-          <p><span className="warning-icon"></span> Selecciona una conexión de base de datos para ejecutar consultas</p>
+          <p><span className="warning-icon"></span> Selecciona una conexion</p>
         </div>
       )}
 
@@ -163,7 +137,7 @@ const QueryEditor: React.FC<QueryEditorProps> = ({ connectionId, connectionName,
       lineHeight: 1.5
     }}
     textareaClassName="query-textarea"
-    placeholder="Escribe tu consulta SQL aquí..."
+    placeholder="Escribe tu consulta SQl."
     disabled={!connectionId}
   />
 </div>
@@ -210,20 +184,6 @@ const QueryEditor: React.FC<QueryEditorProps> = ({ connectionId, connectionName,
                   ))}
                 </tbody>
               </table>
-            </div>
-          )}
-
-
-          {result.data && result.data.length === 0 && (
-            <div className="no-data-message">
-              <p>La consulta se ejecutó correctamente pero no devolvió datos.</p>
-            </div>
-          )}
-
-
-          {!result.data && result.rowsAffected !== undefined && (
-            <div className="no-data-message">
-              <p>Consulta ejecutada correctamente. Filas afectadas: {result.rowsAffected}</p>
             </div>
           )}
         </div>
