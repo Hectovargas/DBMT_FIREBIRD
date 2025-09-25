@@ -92,4 +92,18 @@ Durante el desarrollo se identificaron **limitaciones inherentes al SGBD Firebir
                    |-ddlManager.ts
                    |-metadataManager.ts
                    |-operationsManager.ts
+
+                   
+# version 2 
+
+## 8. Diagrama Relacional
+- El proyecto ahora cuenta con la posibilidad de ver el diagrama relacional, simplemente dandole click derecho en la conexion 
+  del sidebar y eligiendo la opcion de diagrama relacional
+
+## 9. sincronizacion
+- El proyecto ahora cuenta con un formulario para conectarse a una base de datos de PostgreSQL
+
+- Se introducen los datos y se le da al boton de migrar a postgreSQL el elimina todo lo de la base de datos anterior
+  en cascada y construye las cadenas para creacion de vistas y tablas mediante la metadata extraida de las otras funciones como getTables, getColumns y getViews.
+
         

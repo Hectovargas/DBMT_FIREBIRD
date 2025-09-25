@@ -147,7 +147,7 @@ class DatabaseManager {
                     if (err) {
                         resolve({
                             success: false,
-                            message: 'Error de conexiOn',
+                            message: 'Error de conexion',
                             error: { code: err.code, message: err.message }
                         });
                         return;
@@ -172,7 +172,7 @@ class DatabaseManager {
     
                         resolve({
                             success: true,
-                            message: 'ConexiOn exitosa'
+                            message: 'Conexion exitosa'
                         });
                     });
                 });
@@ -181,7 +181,7 @@ class DatabaseManager {
         } catch (error: any) {
             return {
                 success: false,
-                message: 'Error de conexiOn',
+                message: 'Error de conexion',
                 error: {
                     code: error.code,
                     message: error.message
@@ -224,7 +224,7 @@ class DatabaseManager {
         } catch (error: any) {
             return {
                 success: false,
-                message: 'Error al agregar conexiOn',
+                message: 'Error al agregar conexion',
                 error: { message: error.message }
             };
         }
@@ -236,7 +236,7 @@ class DatabaseManager {
             if (!this.connections[connectionId]) {
                 return {
                     success: false,
-                    message: 'Conexión no encontrada'
+                    message: 'Conexion no encontrada'
                 };
             }
 
@@ -245,7 +245,7 @@ class DatabaseManager {
             if (connection.isConnected && connection.pool) {
                 return {
                     success: true,
-                    message: 'Ya está conectado a esta base de datos'
+                    message: 'Ya esta conectado a esta base de datos'
                 };
             }
 
@@ -271,7 +271,7 @@ class DatabaseManager {
                             pool.destroy();
                             resolve({
                                 success: false,
-                                message: 'Error al obtener información del servidor',
+                                message: 'Error al obtener informacion del servidor',
                                 error: { message: err.message }
                             });
                             return;

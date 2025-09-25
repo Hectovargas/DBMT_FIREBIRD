@@ -37,18 +37,18 @@ const MigrationForm: React.FC<MigrationFormProps> = ({
       if (response.success) {
         setResult({ 
           success: true, 
-          message: 'Migración completada exitosamente! Revisa tu base de datos PostgreSQL.' 
+          message: 'Migracion completada exitosamente! Revisa tu base de datos PostgreSQL.' 
         });
       } else {
         setResult({ 
           success: false, 
-          message: response.message || 'Error en la migración' 
+          message: response.message
         });
       }
     } catch (error: any) {
       setResult({ 
         success: false, 
-        message: error.message || 'Error al conectar con el servidor' 
+        message: error.message 
       });
     } finally {
       setIsLoading(false);
@@ -74,12 +74,12 @@ const MigrationForm: React.FC<MigrationFormProps> = ({
       <div className="migration-modal">
         <div className="modal-header">
           <h2>Migrar a PostgreSQL</h2>
-          <p>Conexión origen: <strong>{connectionName}</strong></p>
+          <p>Conexion de origen: <strong>{connectionName}</strong></p>
         </div>
 
         <form onSubmit={handleSubmit} className="migration-form">
           <div className="form-section">
-            <h3>Configuración PostgreSQL de destino:</h3>
+            <h3>Configuracion PostgreSQL de destino:</h3>
             
             <div className="form-row">
               <div className="form-group">
@@ -162,20 +162,11 @@ const MigrationForm: React.FC<MigrationFormProps> = ({
               disabled={isLoading}
               className="btn-migrate"
             >
-              {isLoading ? 'Migrando...' : 'Iniciar Migración'}
+              {isLoading ? 'Migrando...' : 'Migrar'}
             </button>
           </div>
         </form>
 
-        <div className="migration-info">
-          <h4>¿Qué se migrará?</h4>
-          <ul>
-            <li>Todas las tablas con su estructura</li>
-            <li>Todos los datos de las tablas</li>
-            <li>Todas las vistas (conversión básica)</li>
-            <li>Claves primarias y constraints básicos</li>
-          </ul>
-        </div>
       </div>
     </div>
   );
